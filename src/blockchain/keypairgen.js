@@ -1,19 +1,30 @@
-import { secp256k1 } from "secp256k1";
-import { keccak256 } from "js-sha3";
+const { secp256k1 } = require("secp256k1");
+const { keccak256 } = require("js-sha3");
+const fs = require("fs");
+const crypto = require("crypto-browserify");
+
+// Load the word list
+const wordList = fs
+  .readFileSync("bip-39 words/english.txt", "utf-8")
+  .trim()
+  .split("\n");
+
+// Function to generate a random private key
+function generatePrivateKey() {
+  const randomBytes = crypto.randomBytes(32); // 32 bytes = 256 bits
+  return randomBytes.toString("hex");
+}
 
 function privateKeyToPublicKey(privateKey) {
-  const curve = secp256k1; // Use the secp256k1 curve
   const privKeyBuffer = Buffer.from(privateKey, "hex");
-  const publicKey = curve.getPublicKey(privKeyBuffer);
+  const publicKey = secp256k1.publicKeyCreate(privKeyBuffer);
   return publicKey.toString("hex");
 }
 
 function publicKeyToAddress(publicKey) {
-  const keccakHash = keccak256(publicKey);
+  const keccakHash = keccak256(Buffer.from(publicKey.slice(2), "hex"));
   return "0x" + keccakHash.slice(-40); // Take last 20 bytes (40 hex characters)
 }
-
-const wordList = ["abandon", "ability", "able"]; // Add all BIP39 words
 
 function generateMnemonic() {
   let mnemonic = [];
@@ -24,3 +35,14 @@ function generateMnemonic() {
   }
   return mnemonic.join(" ");
 }
+
+// Example usage:
+const privateKey = generatePrivateKey();
+const publicKey = privateKeyToPublicKey(privateKey);
+const address = publicKeyToAddress(publicKey);
+const mnemonic = generateMnemonic();
+
+console.log("Private Key:", privateKey);
+console.log("Public Key:", publicKey);
+console.log("Address:", address);
+console.log("Mnemonic:", mnemonic);
