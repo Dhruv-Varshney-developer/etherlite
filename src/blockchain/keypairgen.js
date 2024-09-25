@@ -1,7 +1,9 @@
-const { secp256k1 } = require("secp256k1");
+const EC = require("elliptic").ec;
 const { keccak256 } = require("js-sha3");
 const fs = require("fs");
-const crypto = require("crypto-browserify");
+
+// Create a new instance of the elliptic curve
+const ec = new EC("secp256k1");
 
 // Load the word list
 const wordList = fs
@@ -11,18 +13,21 @@ const wordList = fs
 
 // Function to generate a random private key
 function generatePrivateKey() {
-  const randomBytes = crypto.randomBytes(32); // 32 bytes = 256 bits
-  return randomBytes.toString("hex");
+  const key = ec.genKeyPair();
+  return key.getPrivate("hex");
 }
 
 function privateKeyToPublicKey(privateKey) {
-  const privKeyBuffer = Buffer.from(privateKey, "hex");
-  const publicKey = secp256k1.publicKeyCreate(privKeyBuffer);
-  return publicKey.toString("hex");
+  const key = ec.keyFromPrivate(privateKey, "hex");
+  return key.getPublic("hex");
 }
 
 function publicKeyToAddress(publicKey) {
-  const keccakHash = keccak256(Buffer.from(publicKey.slice(2), "hex"));
+  // Remove the '04' prefix if it exists (uncompressed public key format)
+  const pubKeyWithoutPrefix = publicKey.startsWith("04")
+    ? publicKey.slice(2)
+    : publicKey;
+  const keccakHash = keccak256(Buffer.from(pubKeyWithoutPrefix, "hex"));
   return "0x" + keccakHash.slice(-40); // Take last 20 bytes (40 hex characters)
 }
 
