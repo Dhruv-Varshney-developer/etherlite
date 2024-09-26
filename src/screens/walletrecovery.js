@@ -122,7 +122,7 @@ function RecoveryPhraseScreen() {
           <Box display="flex" justifyContent="space-between" mb={2}>
             {/* Removed the 24 recovery phrase option */}
             <Typography color="primary" variant="button">
-              12 Recovery Words
+              12
             </Typography>
             <Button
               variant="text"
