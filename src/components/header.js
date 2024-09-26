@@ -11,12 +11,13 @@ function Header() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          height: 120
         }}
       >
         <img
           src={EtherliteLogo}
           alt="Etherlite Logo"
-          style={{ height: 100, marginRight: 16 }}
+          style={{ height: 120, marginRight: 16 }}
         />
         <div style={{ display: "flex", gap: "16px" }}>
           <Button color="inherit" component={Link} to="/">
