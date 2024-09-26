@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 import Header from "./components/header";
 import Portfolio from "./screens/portfolio";
@@ -7,6 +12,10 @@ import NFT from "./screens/nft";
 import Trade from "./screens/trade";
 import Transactions from "./screens/transactions";
 import Settings from "./screens/settings";
+import WalletScreen from "./screens/wallet";
+import RecoveryPhraseScreen from "./screens/walletrecovery";
+import PasswordScreen from "./screens/password";
+import NewWallet from "./screens/newwallet";
 
 const darkTheme = createTheme({
   palette: {
@@ -18,30 +27,50 @@ const darkTheme = createTheme({
 });
 
 function App() {
+  // Get the current location to conditionally render the header
+  const location = useLocation();
+
+  // Define the paths where you want to display the header
+  const headerPaths = [
+    "/portfolio",
+    "/nft",
+    "/trade",
+    "/transactions",
+    "/settings",
+  ];
+
+  // Check if the current path is in the headerPaths array
+  const showHeader = headerPaths.includes(location.pathname);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Router>
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-          {/* Header */}
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+        {/* Conditionally render the Header */}
+        {showHeader && (
           <Box>
             <Header />
           </Box>
+        )}
 
-          {/* Content */}
-          <Box sx={{ flex: 1, display: "flex", marginTop: 15 }}>
-            <Box sx={{ flexGrow: 1, padding: 2 }}>
-              <Routes>
-                <Route path="/" element={<Portfolio />} />
-                <Route path="/nft" element={<NFT />} />
-                <Route path="/trade" element={<Trade />} />
-                <Route path="/transactions" element={<Transactions />} />
-                <Route path="/settings" element={<Settings />} />
-              </Routes>
-            </Box>
+        {/* Content */}
+        <Box sx={{ flex: 1, display: "flex", marginTop: showHeader ? 15 : 0 }}>
+          <Box sx={{ flexGrow: 1, padding: 2 }}>
+            <Routes>
+              <Route path="/" element={<WalletScreen />} />
+              <Route path="/passwordscreen" element={<PasswordScreen />} />
+              <Route path="/newwallet" element={<NewWallet />} />
+              <Route path="/newwallet" element={<WalletScreen />} />
+              <Route path="/recovery" element={<RecoveryPhraseScreen />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/nft" element={<NFT />} />
+              <Route path="/trade" element={<Trade />} />
+              <Route path="/transactions" element={<Transactions />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
           </Box>
         </Box>
-      </Router>
+      </Box>
     </ThemeProvider>
   );
 }
