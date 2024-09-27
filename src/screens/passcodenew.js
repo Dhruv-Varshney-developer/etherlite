@@ -67,7 +67,7 @@ function Passcodenew({seedPhrase}) {
         saveEncryptedSeedToLocalStorage(encryptedSeed);
         
         console.log('Seed phrase encrypted and stored successfully!');
-        navigate('/portfolio'); // navigate to the next screen
+        navigate('/portfolio',{ state: { password: newPassword }}); // navigate to the next screen
       } else {
         alert('Passwords do not match or are empty.');
       }

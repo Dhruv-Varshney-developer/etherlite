@@ -11,10 +11,11 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { motion } from "framer-motion";
 
-import { decryptSeedPhrase } from "../security/encryption"; // Your existing encryption utility
-import { getEncryptedSeedFromLocalStorage } from "../security/storage"; // Your existing local storage utility
+import { decryptSeedPhrase } from "../security/encryption";
+import { getEncryptedSeedFromLocalStorage } from "../security/storage";
 import { derivePublicAddressFromSeed } from "../blockchain/keypairgen";
 import { getBalance } from "../blockchain/ethereum-interaction";
+import { useLocation } from "react-router-dom";
 
 const Portfolio = () => {
   const [publicAddress, setPublicAddress] = useState("");
@@ -22,13 +23,13 @@ const Portfolio = () => {
   const [assets, setAssets] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
 
+  const location = useLocation();
+  const password = location.state?.password;
+
   useEffect(() => {
     const fetchAssets = async () => {
-      // Assuming you have functions that fetch public address and assets
       const encryptedSeed = getEncryptedSeedFromLocalStorage();
-      const password = prompt(
-        "Please enter your password to decrypt the seed phrase:"
-      );
+
       const seedPhrase = decryptSeedPhrase(encryptedSeed, password);
 
       const address = await derivePublicAddressFromSeed(seedPhrase); // Implement derivePublicAddressFromSeed
@@ -49,8 +50,10 @@ const Portfolio = () => {
       ]);
     };
 
-    fetchAssets();
-  }, [balance]);
+    if (password) {
+      fetchAssets();
+    }
+  }, [balance, password]);
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(publicAddress);
