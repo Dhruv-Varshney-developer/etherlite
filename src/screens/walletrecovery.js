@@ -77,9 +77,9 @@ function RecoveryPhraseScreen() {
     }
   };
 
-  // Navigate to the password screen
+  // Navigate to the passcode screen
   const handleContinue = () => {
-    navigate("/passwordscreen");
+    navigate("/passcoderecovery");
   };
 
   // Go back to the previous screen
