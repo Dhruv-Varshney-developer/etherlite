@@ -1,20 +1,5 @@
 import fetch from "node-fetch";
-/*import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Get the directory name of the current module
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Construct the path to the .env file
-const envPath = path.resolve(__dirname, '../../.env');
-
-// Load environment variables from the specified path
-dotenv.config({ path: envPath });
-
-const alchemy_api_key= process.env.alchemy_api_key;
-
-*/
 const alchemy_api_key = "_eey_DCxuKpdcJYnMuAWPiIrhbIsozOX";
 const NETWORK = "sepolia"; // or 'mainnet', 'sepolia', etc.
 const ALCHEMY_URL = `https://eth-${NETWORK}.g.alchemy.com/v2/${alchemy_api_key}`;
@@ -55,7 +40,6 @@ export async function getBalance(address) {
     address,
     "latest",
   ]);
-  const ethBalance = parseInt(balance, 16) / 1e18;
-  return ethBalance;
+  return balance;
 }
 

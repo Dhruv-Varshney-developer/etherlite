@@ -16,6 +16,7 @@
     "dotenv": "^16.4.5",
     "elliptic": "^6.5.7",
     "ethereumjs-util": "^7.1.5",
+    "ethers": "^6.13.2",
     "ethjs-util": "^0.1.6",
     "framer-motion": "^11.8.0",
     "hdkey": "^2.1.0",
