@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import dotenv from 'dotenv';
+/*import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -13,6 +13,9 @@ const envPath = path.resolve(__dirname, '../../.env');
 dotenv.config({ path: envPath });
 
 const alchemy_api_key= process.env.alchemy_api_key;
+
+*/
+const alchemy_api_key = "_eey_DCxuKpdcJYnMuAWPiIrhbIsozOX";
 const NETWORK = "sepolia"; // or 'mainnet', 'sepolia', etc.
 const ALCHEMY_URL = `https://eth-${NETWORK}.g.alchemy.com/v2/${alchemy_api_key}`;
 
@@ -35,48 +38,24 @@ async function sendJsonRpcRequest(method, params) {
   return data.result;
 }
 
-async function getAccountNonce(address) {
+export async function getAccountNonce(address) {
   return sendJsonRpcRequest("eth_getTransactionCount", [address, "latest"]);
 }
 
-async function estimateGas(transaction) {
+export async function estimateGas(transaction) {
   return sendJsonRpcRequest("eth_estimateGas", [transaction]);
 }
 
-async function getGasPrice() {
+export async function getGasPrice() {
   return sendJsonRpcRequest("eth_gasPrice", []);
 }
 
-async function getBalance(address) {
-  return sendJsonRpcRequest("eth_getBalance", [address, "latest"]);
+export async function getBalance(address) {
+  const balance = await sendJsonRpcRequest("eth_getBalance", [
+    address,
+    "latest",
+  ]);
+  const ethBalance = parseInt(balance, 16) / 1e18;
+  return ethBalance;
 }
 
-// Example usage
-async function main() {
-  try {
-    const testAddress = "0xc5728a34c89e353ab21a06048010a3db37a460ef"; // Replace with your test address
-
-    console.log("Getting account nonce...");
-    const nonce = await getAccountNonce(testAddress);
-    console.log("Nonce:", parseInt(nonce, 16));
-
-    console.log("\nEstimating gas for a simple transfer...");
-    const gasEstimate = await estimateGas({
-      to: "0x1234567890123456789012345678901234567890",
-      value: "0x1", // 1 wei
-    });
-    console.log("Estimated gas:", parseInt(gasEstimate, 16));
-
-    console.log("\nGetting current gas price...");
-    const gasPrice = await getGasPrice();
-    console.log("Gas price:", parseInt(gasPrice, 16), "wei");
-
-    console.log("\nChecking balance...");
-    const balance = await getBalance(testAddress);
-    console.log("Balance:", parseInt(balance, 16), "wei");
-  } catch (error) {
-    console.error("Error:", error.message);
-  }
-}
-
-main();

@@ -1,34 +1,40 @@
-const EC = require("elliptic").ec;
-const { keccak256 } = require("js-sha3");
+import hdkey from 'hdkey'; // HDKey for deriving keys
+import { toBuffer, bufferToHex, toChecksumAddress } from 'ethjs-util'; // Ethjs utilities
+import { mnemonicToSeed } from './mnemonic';
 
-// Create a new instance of the elliptic curve
-const ec = new EC("secp256k1");
 
-// Function to generate a random private key
-function generatePrivateKey() {
-  const key = ec.genKeyPair();
-  return key.getPrivate("hex");
-}
+// Function to derive a private key using BIP-32 path (m/44'/60'/0'/0/0)
+export const derivePrivateKeyFromSeed = (mnemonic) => {
+  const seed = mnemonicToSeed(mnemonic); // Generate seed from mnemonic
+  const masterKey = hdkey.fromMasterSeed(seed); // Create HDKey from seed
+  const childKey = masterKey.derive("m/44'/60'/0'/0/0"); // Derive child key
+  const privateKey = bufferToHex(childKey.privateKey); // Convert to hex
+  return privateKey; // Return private key
+};
 
-function privateKeyToPublicKey(privateKey) {
-  const key = ec.keyFromPrivate(privateKey, "hex");
-  return key.getPublic("hex");
-}
+// Function to convert a private key to a public key
+export const privateKeyToPublicKey = (privateKey) => {
+  const publicKey = bufferToHex(toBuffer(privateKey)); // Convert private key to buffer and then to hex
+  return publicKey; // Return public key
+};
 
-function publicKeyToAddress(publicKey) {
-  // Remove the '04' prefix if it exists (uncompressed public key format)
-  const pubKeyWithoutPrefix = publicKey.startsWith("04")
-    ? publicKey.slice(2)
-    : publicKey;
-  const keccakHash = keccak256(Buffer.from(pubKeyWithoutPrefix, "hex"));
-  return "0x" + keccakHash.slice(-40); // Take last 20 bytes (40 hex characters)
-}
+// Function to convert a public key to an Ethereum address
+export const publicKeyToAddress = (publicKey) => {
+  const address = toChecksumAddress(publicKey.slice(2)); // Convert public key to Ethereum address
+  return address; // Return Ethereum address
+};
 
-// Example usage:
-const privateKey = generatePrivateKey();
-const publicKey = privateKeyToPublicKey(privateKey);
-const address = publicKeyToAddress(publicKey);
+// Derive the public address from the seed
+export const derivePublicAddressFromSeed = (mnemonic) => {
+  // Step 1: Derive the private key from the seed
+  const privateKey = derivePrivateKeyFromSeed(mnemonic);
 
-console.log("Private Key:", privateKey);
-console.log("Public Key:", publicKey);
-console.log("Address:", address);
+  // Step 2: Convert the private key to a public key
+  const publicKey = privateKeyToPublicKey(privateKey);
+
+  // Step 3: Convert the public key to an Ethereum address
+  const address = publicKeyToAddress(publicKey);
+
+  // Return the derived Ethereum address
+  return address;
+};
