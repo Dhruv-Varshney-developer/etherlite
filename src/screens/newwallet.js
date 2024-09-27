@@ -55,6 +55,10 @@ const NewWalletScreen = () => {
     navigate(-1); // Go back to the previous page
   };
 
+  const handleRecoveryPhraseSaved = () => {
+    navigate("/passcodenew");
+  };
+
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
       <Box textAlign="center">
@@ -112,7 +116,11 @@ const NewWalletScreen = () => {
           </motion.div>
 
           <motion.div variants={buttonVariants} whileHover="hover">
-            <Button variant="contained" color="primary">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleRecoveryPhraseSaved}
+            >
               I SAVED MY RECOVERY PHRASE
             </Button>
           </motion.div>

@@ -14,8 +14,9 @@ import Transactions from "./screens/transactions";
 import Settings from "./screens/settings";
 import WalletScreen from "./screens/wallet";
 import RecoveryPhraseScreen from "./screens/walletrecovery";
-import PasswordScreen from "./screens/password";
 import NewWallet from "./screens/newwallet";
+import Passcoderecovery from "./screens/passcoderecovery";
+import Passcodenew from "./screens/passcodenew";
 
 const darkTheme = createTheme({
   palette: {
@@ -58,7 +59,9 @@ function App() {
           <Box sx={{ flexGrow: 1, padding: 2 }}>
             <Routes>
               <Route path="/" element={<WalletScreen />} />
-              <Route path="/passwordscreen" element={<PasswordScreen />} />
+              <Route path="/passcodenew" element={<Passcodenew />} />
+
+              <Route path="/passcoderecovery" element={<Passcoderecovery />} />
               <Route path="/newwallet" element={<NewWallet />} />
               <Route path="/newwallet" element={<WalletScreen />} />
               <Route path="/recovery" element={<RecoveryPhraseScreen />} />
