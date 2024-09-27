@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { encryptSeedPhrase } from "../security/encryption";
+import { saveEncryptedSeedToLocalStorage } from "../security/storage";
 
 const darkTheme = createTheme({
   palette: {
@@ -49,7 +51,7 @@ const buttonVariants = {
   },
 };
 
-function Passcodenew() {
+function Passcodenew({seedPhrase}) {
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const navigate = useNavigate();
@@ -59,8 +61,16 @@ function Passcodenew() {
   };
 
   const handleContinue = () => {
-    // Add your logic here
-    console.log("Continue clicked");
+    if (newPassword === repeatPassword && newPassword.length > 0) {
+        // Encrypt seed phrase and save to local storage
+        const encryptedSeed = encryptSeedPhrase(seedPhrase, newPassword);
+        saveEncryptedSeedToLocalStorage(encryptedSeed);
+        
+        console.log('Seed phrase encrypted and stored successfully!');
+        navigate('/portfolio'); // navigate to the next screen
+      } else {
+        alert('Passwords do not match or are empty.');
+      }
   };
 
   return (
