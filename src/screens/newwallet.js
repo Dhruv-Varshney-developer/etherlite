@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import { useNavigate,useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { generateMnemonicPhrase } from "../blockchain/mnemonic";
@@ -24,12 +24,9 @@ const buttonVariants = {
   },
 };
 
-
 const NewWalletScreen = () => {
   const [mnemonic, setMnemonic] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation();
-const seedPhrase = location.state?.seedPhrase;
 
   // Generate mnemonic on component mount
   useEffect(() => {
@@ -59,7 +56,7 @@ const seedPhrase = location.state?.seedPhrase;
   };
 
   const handleRecoveryPhraseSaved = () => {
-    navigate("/passcodenew", { state: { seedPhrase: mnemonic.join(' ') } });
+    navigate("/passcodenew", { state: { seedPhrase: mnemonic.join(" ") } });
   };
 
   return (

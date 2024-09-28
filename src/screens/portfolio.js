@@ -29,13 +29,19 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchAssets = async () => {
       const encryptedSeed = getEncryptedSeedFromLocalStorage();
+      console.log("Encrypted seed from local storage:", encryptedSeed);
+      console.log("Password used for decryption:", password);
+      const seedPhrase =  await decryptSeedPhrase(encryptedSeed, password);
+      console.log("decrypted seed phrase:" + seedPhrase);
 
-      const seedPhrase = decryptSeedPhrase(encryptedSeed, password);
 
       const address = await derivePublicAddressFromSeed(seedPhrase); // Implement derivePublicAddressFromSeed
+      console.log("address:" + address);
+
       setPublicAddress(address);
 
       const ethBalance = await getBalance(address); // Fetch ETH balance
+      console.log("ethbalance:" + ethBalance);
       setBalance(parseInt(ethBalance, 16) / 1e18);
 
       // Mock assets array for now, use Alchemy API to fetch real data later

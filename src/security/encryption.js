@@ -17,6 +17,13 @@ export const encryptSeedPhrase = (seedPhrase, password) => {
  * @returns {string} - The decrypted seed phrase.
  */
 export const decryptSeedPhrase = (encryptedSeed, password) => {
-  const bytes = CryptoJS.AES.decrypt(encryptedSeed, password);
-  return bytes.toString(CryptoJS.enc.Utf8);
+  try {
+    const bytes = CryptoJS.AES.decrypt(encryptedSeed, password);
+    const seedPhrase = bytes.toString(CryptoJS.enc.Utf8);
+    if (!seedPhrase) throw new Error("Failed to decrypt seed phrase.");
+    return seedPhrase;
+  } catch (error) {
+    console.error("Decryption error:", error.message);
+    return null;
+  }
 };
