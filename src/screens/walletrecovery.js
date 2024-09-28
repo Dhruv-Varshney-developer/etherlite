@@ -13,7 +13,8 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion"; // For animation effects
 import { useNavigate } from "react-router-dom"; // For navigation
-
+import { getBalance } from "../blockchain/ethereum-interaction";
+import { derivePublicAddressFromSeed } from "../blockchain/keypairgen";
 // Custom dark theme
 const darkTheme = createTheme({
   palette: {
@@ -77,9 +78,38 @@ function RecoveryPhraseScreen() {
     }
   };
 
-  // Navigate to the passcode screen
-  const handleContinue = () => {
-    navigate("/passcoderecovery");
+  const checkIfAccountIsActive = async (mnemonic) => {
+    const derivedAddress = derivePublicAddressFromSeed(mnemonic);
+
+    try {
+      const balance = await getBalance(derivedAddress);
+      const ethBalance = parseInt(balance, 16) / 1e18;
+
+      if (ethBalance > 0) {
+        return true; // Active account
+      } else {
+        // Optionally, check transaction history here
+        return false; // No balance, consider account inactive
+      }
+    } catch (error) {
+      console.error("Error checking account status:", error);
+      return false;
+    }
+  };
+
+  const handleContinue = async () => {
+    const mnemonic = recoveryPhrase.join(" ");
+
+    const isActive = await checkIfAccountIsActive(mnemonic);
+
+    if (!isActive) {
+      alert(
+        "The entered mnemonic does not correspond to an active Ethereum account."
+      );
+    } else {
+      // Proceed with recovery
+      navigate("/passcoderecovery");
+    }
   };
 
   // Go back to the previous screen
