@@ -15,27 +15,40 @@ import { decryptSeedPhrase } from "../security/encryption";
 import { getEncryptedSeedFromLocalStorage } from "../security/storage";
 import { derivePublicAddressFromSeed } from "../blockchain/keypairgen";
 import { getBalance } from "../blockchain/ethereum-interaction";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Portfolio = () => {
   const [publicAddress, setPublicAddress] = useState("");
   const [balance, setBalance] = useState(0);
   const [assets, setAssets] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
+  const navigate = useNavigate();
 
   const location = useLocation();
   const password = location.state?.password;
+  console.log("password:" + password);
+
+  const encryptedSeed = getEncryptedSeedFromLocalStorage();
+  console.log("Encrypted seed from local storage:", encryptedSeed);
+  console.log("Password used for decryption:", password);
+  const decryptedSeedPhrase = decryptSeedPhrase(encryptedSeed, password);
+  console.log("decrypted seed phrase:" + decryptedSeedPhrase);
+  useEffect(() => {
+    const verifyAndRedirect = async () => {
+        const decryptedSeedPhrase = await decryptSeedPhrase(encryptedSeed, password);
+        if (!decryptedSeedPhrase) {
+            navigate("/");
+        } else if (!password) {
+            navigate("/enter-password");
+        }
+    };
+
+    verifyAndRedirect();
+}, [encryptedSeed, password, navigate]);
 
   useEffect(() => {
     const fetchAssets = async () => {
-      const encryptedSeed = getEncryptedSeedFromLocalStorage();
-      console.log("Encrypted seed from local storage:", encryptedSeed);
-      console.log("Password used for decryption:", password);
-      const seedPhrase =  await decryptSeedPhrase(encryptedSeed, password);
-      console.log("decrypted seed phrase:" + seedPhrase);
-
-
-      const address = await derivePublicAddressFromSeed(seedPhrase); // Implement derivePublicAddressFromSeed
+      const address = await derivePublicAddressFromSeed(decryptedSeedPhrase); // Implement derivePublicAddressFromSeed
       console.log("address:" + address);
 
       setPublicAddress(address);
@@ -59,7 +72,7 @@ const Portfolio = () => {
     if (password) {
       fetchAssets();
     }
-  }, [balance, password]);
+  }, [balance, decryptedSeedPhrase, password]);
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(publicAddress);

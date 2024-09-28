@@ -17,6 +17,7 @@ import RecoveryPhraseScreen from "./screens/walletrecovery";
 import NewWallet from "./screens/newwallet";
 import Passcoderecovery from "./screens/passcoderecovery";
 import Passcodenew from "./screens/passcodenew";
+import EnterPassword from "./screens/enterpassword";
 
 const darkTheme = createTheme({
   palette: {
@@ -60,6 +61,7 @@ function App() {
             <Routes>
               <Route path="/" element={<WalletScreen />} />
               <Route path="/passcodenew" element={<Passcodenew />} />
+              <Route path="/enter-password" element={<EnterPassword />} />
 
               <Route path="/passcoderecovery" element={<Passcoderecovery />} />
               <Route path="/newwallet" element={<NewWallet />} />
