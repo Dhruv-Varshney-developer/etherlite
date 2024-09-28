@@ -108,7 +108,7 @@ function RecoveryPhraseScreen() {
       );
     } else {
       // Proceed with recovery
-      navigate("/passcoderecovery");
+      navigate("/passcoderecovery",{ state: { seedPhrase: mnemonic } });
     }
   };
 

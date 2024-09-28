@@ -11,7 +11,9 @@ import {
   Link,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { saveEncryptedSeedToLocalStorage } from "../security/storage";
+import { encryptSeedPhrase } from "../security/encryption";
 
 const darkTheme = createTheme({
   palette: {
@@ -53,14 +55,27 @@ function Passcoderecovery() {
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const seedPhrase = location.state?.seedPhrase;
 
   const handleBack = () => {
     navigate(-1);
   };
 
   const handleContinue = () => {
-    // Add your logic here
-    console.log("Continue clicked");
+    if (newPassword === repeatPassword && newPassword.length > 0) {
+      // Encrypt seed phrase and save to local storage
+      console.log("original seedphrase:" + seedPhrase);
+      const encryptedSeed = encryptSeedPhrase(seedPhrase, newPassword);
+      console.log("Original seed phrase:", seedPhrase);
+      console.log("Encrypted seed phrase:", encryptedSeed);
+      saveEncryptedSeedToLocalStorage(encryptedSeed);
+
+      console.log("Seed phrase encrypted and stored successfully!");
+      navigate("/portfolio", { state: { password: newPassword } }); // navigate to the next screen
+    } else {
+      alert("Passwords do not match or are empty.");
+    }
   };
 
   return (
