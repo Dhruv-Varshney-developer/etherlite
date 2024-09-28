@@ -20,7 +20,7 @@ function Header() {
           style={{ height: 120, marginRight: 16 }}
         />
         <div style={{ display: "flex", gap: "16px" }}>
-          <Button color="inherit" component={Link} to="/">
+          <Button color="inherit" component={Link} to="/portfolio">
             Portfolio
           </Button>
           <Button color="inherit" component={Link} to="/nft">
