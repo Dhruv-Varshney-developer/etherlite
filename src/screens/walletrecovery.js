@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion"; // For animation effects
 import { useNavigate } from "react-router-dom"; // For navigation
-import { getBalance } from "../blockchain/ethereum-interaction";
+import { validateAddressOnSepolia } from "../blockchain/ethereum-interaction";
 import { derivePublicAddressFromSeed } from "../blockchain/keypairgen";
 // Custom dark theme
 const darkTheme = createTheme({
@@ -82,17 +82,12 @@ function RecoveryPhraseScreen() {
     const derivedAddress = derivePublicAddressFromSeed(mnemonic);
 
     try {
-      const balance = await getBalance(derivedAddress);
-      const ethBalance = parseInt(balance, 16) / 1e18;
+      // Use validateAddressOnSepolia to validate the account
+      const isValid = await validateAddressOnSepolia(derivedAddress);
 
-      if (ethBalance > 0) {
-        return true; // Active account
-      } else {
-        // Optionally, check transaction history here
-        return false; // No balance, consider account inactive
-      }
+      return isValid;
     } catch (error) {
-      console.error("Error checking account status:", error);
+      console.error("Error validating account status:", error);
       return false;
     }
   };
@@ -108,7 +103,7 @@ function RecoveryPhraseScreen() {
       );
     } else {
       // Proceed with recovery
-      navigate("/passcoderecovery",{ state: { seedPhrase: mnemonic } });
+      navigate("/passcoderecovery", { state: { seedPhrase: mnemonic } });
     }
   };
 
