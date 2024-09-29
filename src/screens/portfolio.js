@@ -16,12 +16,16 @@ import { getEncryptedSeedFromLocalStorage } from "../security/storage";
 import { derivePublicAddressFromSeed } from "../blockchain/keypairgen";
 import { getBalance } from "../blockchain/ethereum-interaction";
 import { useNavigate, useLocation } from "react-router-dom";
+import ReceiveModal from "../components/receivemodal";
+import SendModal from "../components/sendmodal";
 
 const Portfolio = () => {
   const [publicAddress, setPublicAddress] = useState("");
   const [balance, setBalance] = useState(0);
   const [assets, setAssets] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
+  const [isReceiveModalOpen, setReceiveModalOpen] = useState(false);
+  const [isSendModalOpen, setSendModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -35,21 +39,32 @@ const Portfolio = () => {
   console.log("decrypted seed phrase:" + decryptedSeedPhrase);
   useEffect(() => {
     const verifyAndRedirect = async () => {
-        const decryptedSeedPhrase = await decryptSeedPhrase(encryptedSeed, password);
-        if (!decryptedSeedPhrase) {
-            navigate("/");
-        } else if (!password) {
-            navigate("/enter-password");
-        }
+      const decryptedSeedPhrase = await decryptSeedPhrase(
+        encryptedSeed,
+        password
+      );
+      if (!decryptedSeedPhrase) {
+        navigate("/");
+      } else if (!password) {
+        navigate("/enter-password");
+      }
     };
 
     verifyAndRedirect();
-}, [encryptedSeed, password, navigate]);
+  }, [encryptedSeed, password, navigate]);
 
   useEffect(() => {
     const fetchAssets = async () => {
       const address = await derivePublicAddressFromSeed(decryptedSeedPhrase); // Implement derivePublicAddressFromSeed
-      console.log("address:" + address);
+      console.log("derived address:" + address);
+      if (
+        !address ||
+        typeof address !== "string" ||
+        !address.startsWith("0x")
+      ) {
+        console.error("Invalid derived address:", address);
+        return;
+      }
 
       setPublicAddress(address);
 
@@ -62,7 +77,7 @@ const Portfolio = () => {
         {
           name: "Ethereum",
           symbol: "ETH",
-          price: 1600,
+          price: 3000,
           value: balance,
           amount: balance,
         },
@@ -114,6 +129,7 @@ const Portfolio = () => {
               variant="contained"
               fullWidth
               sx={{ backgroundColor: "#ff6b00" }}
+              onClick={() => setReceiveModalOpen(true)}
             >
               Receive
             </Button>
@@ -125,6 +141,7 @@ const Portfolio = () => {
               variant="contained"
               fullWidth
               sx={{ backgroundColor: "#ff6b00" }}
+              onClick={() => setSendModalOpen(true)}
             >
               Send
             </Button>
@@ -171,6 +188,17 @@ const Portfolio = () => {
           + Add new asset
         </Button>
       </Box>
+      {/* Modals */}
+      <ReceiveModal
+        open={isReceiveModalOpen}
+        onClose={() => setReceiveModalOpen(false)}
+        publicAddress={publicAddress}
+      />
+      <SendModal
+        open={isSendModalOpen}
+        onClose={() => setSendModalOpen(false)}
+        publicAddress={publicAddress}
+      />
     </Container>
   );
 };
