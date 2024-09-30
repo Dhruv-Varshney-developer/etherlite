@@ -13,7 +13,10 @@ import { motion } from "framer-motion";
 
 import { decryptSeedPhrase } from "../security/encryption";
 import { getEncryptedSeedFromLocalStorage } from "../security/storage";
-import { derivePublicAddressFromSeed } from "../blockchain/keypairgen";
+import {
+  derivePublicAddressFromSeed,
+  readPrivateKeyFromSeed,
+} from "../blockchain/keypairgen";
 import { getBalance } from "../blockchain/ethereum-interaction";
 import { useNavigate, useLocation } from "react-router-dom";
 import ReceiveModal from "../components/receivemodal";
@@ -21,6 +24,7 @@ import SendModal from "../components/sendmodal";
 
 const Portfolio = () => {
   const [publicAddress, setPublicAddress] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
   const [balance, setBalance] = useState(0);
   const [assets, setAssets] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
@@ -30,11 +34,9 @@ const Portfolio = () => {
 
   const location = useLocation();
   const password = location.state?.password;
-  console.log("password:" + password);
 
   const encryptedSeed = getEncryptedSeedFromLocalStorage();
-  console.log("Encrypted seed from local storage:", encryptedSeed);
-  console.log("Password used for decryption:", password);
+
   const decryptedSeedPhrase = decryptSeedPhrase(encryptedSeed, password);
   console.log("decrypted seed phrase:" + decryptedSeedPhrase);
   useEffect(() => {
@@ -56,7 +58,9 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchAssets = async () => {
       const address = await derivePublicAddressFromSeed(decryptedSeedPhrase); // Implement derivePublicAddressFromSeed
-      console.log("derived address:" + address);
+      const privatekey = readPrivateKeyFromSeed(decryptedSeedPhrase);
+      console.log("derived public address:" + address);
+      console.log("private key" + privatekey);
       if (
         !address ||
         typeof address !== "string" ||
@@ -67,6 +71,7 @@ const Portfolio = () => {
       }
 
       setPublicAddress(address);
+      setPrivateKey(privatekey);
 
       const ethBalance = await getBalance(address); // Fetch ETH balance
       console.log("ethbalance:" + ethBalance);
@@ -198,6 +203,7 @@ const Portfolio = () => {
         open={isSendModalOpen}
         onClose={() => setSendModalOpen(false)}
         publicAddress={publicAddress}
+        privateKey={privateKey}
       />
     </Container>
   );
