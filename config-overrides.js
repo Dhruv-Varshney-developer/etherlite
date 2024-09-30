@@ -15,6 +15,7 @@ module.exports = function override(config) {
     fs: false, // Not required in browser
     net: false, // Not required in browser
     tls: false, // Not required in browser
+    vm: require.resolve("vm-browserify"),
   });
   config.resolve.fallback = fallback;
   config.plugins = (config.plugins || []).concat([
