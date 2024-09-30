@@ -25,8 +25,9 @@ import {
 } from "../blockchain/transaction";
 
 import { sendTransaction } from "../blockchain/ethereum-interaction";
+import { parseEther } from "../blockchain/usefulFunctions";
 
-const SendModal = ({ open, onClose, publicAddress }) => {
+const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [balance, setBalance] = useState("");
@@ -84,6 +85,10 @@ const SendModal = ({ open, onClose, publicAddress }) => {
         amount,
         recipientAddress,
         estimatedGasFee: gasFeeEth.toFixed(6),
+        estimatedGas,
+        gasPriceGwei,
+        gasPrice,
+        gasFeeEth,
         accountNonce: parseInt(nonce, 16),
         newBalance: (
           parseFloat(balance) -
@@ -104,27 +109,16 @@ const SendModal = ({ open, onClose, publicAddress }) => {
   const handleConfirm = async () => {
     setIsLoading(true);
     try {
-      // Retrieve the required transaction details
-      const gasPrice = await getGasPrice();
-      const estimatedGas = await estimateGas({
-        to: transactionDetails.recipientAddress,
-        from: publicAddress,
-        value:
-          "0x" + (parseFloat(transactionDetails.amount) * 1e18).toString(16),
-      });
-      const nonce = await getAccountNonce(publicAddress);
-
       // Build the transaction manually using your createTransaction method
       const transaction = createTransaction(
-        parseInt(nonce, 16),
-        gasPrice,
-        estimatedGas,
-        transactionDetails.recipientAddress,
-        "0x" + (parseFloat(transactionDetails.amount) * 1e18).toString(16) // Convert amount to hex
-      );
+        transactionDetails.accountNonce,
+        transactionDetails.gasPriceGwei,
+        "1000000000000000000",
 
-      // Retrieve the private key from somewhere (you might store it encrypted and decrypt here)
-      const privateKey = "your-private-key-here"; // Placeholder
+        transactionDetails.recipientAddress,
+        transactionDetails.amount
+      );
+      console.log("Transaction:", transaction);
 
       // Sign the transaction
       const signedTransaction = signTransaction(transaction, privateKey);
@@ -132,6 +126,11 @@ const SendModal = ({ open, onClose, publicAddress }) => {
       // Serialize the signed transaction
       const serializedTransaction = serializeTransaction(signedTransaction);
 
+      console.log(
+        "Serialized Transaction:",
+        serializedTransaction.toString("hex")
+      );
+      console.log("Signed Transaction:", signedTransaction);
       // Send the raw transaction
       const txHash = await sendTransaction(
         "0x" + serializedTransaction.toString("hex")
