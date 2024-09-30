@@ -1,5 +1,5 @@
 import hdkey from "hdkey"; // HDKey for deriving keys
-import { bufferToHex, privateToPublic, publicToAddress } from "ethereumjs-util"; 
+import { bufferToHex, privateToPublic, publicToAddress } from "ethereumjs-util";
 import { mnemonicToSeed } from "./mnemonic";
 
 // Function to derive a private key using BIP-32 path (m/44'/60'/0'/0/0)
@@ -23,6 +23,10 @@ export const publicKeyToAddress = (publicKey) => {
   return bufferToHex(address); // Convert Buffer to hex string and return
 };
 
+export const readPrivateKeyFromSeed = (mnemonic) => {
+  const privateKey = derivePrivateKeyFromSeed(mnemonic);
+  return bufferToHex(privateKey);
+};
 // Derive the public address from the seed
 export const derivePublicAddressFromSeed = (mnemonic) => {
   // Step 1: Derive the private key from the seed
