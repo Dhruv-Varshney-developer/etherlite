@@ -18,6 +18,14 @@ import {
   getAccountNonce,
 } from "../blockchain/ethereum-interaction";
 
+import {
+  createTransaction,
+  signTransaction,
+  serializeTransaction,
+} from "../blockchain/transaction";
+
+import { sendTransaction } from "../blockchain/ethereum-interaction";
+
 const SendModal = ({ open, onClose, publicAddress }) => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -30,18 +38,18 @@ const SendModal = ({ open, onClose, publicAddress }) => {
   useEffect(() => {
     const fetchBalance = async () => {
       if (!publicAddress) {
-        console.error('Public address is undefined or null');
+        console.error("Public address is undefined or null");
         return;
       }
       try {
-        console.log('Fetching balance for address:', publicAddress);
+        console.log("Fetching balance for address:", publicAddress);
         const balanceWei = await getBalance(publicAddress);
-        console.log('Received balance:', balanceWei);
+        console.log("Received balance:", balanceWei);
         const balanceEth = parseInt(balanceWei, 16) / 1e18;
         setBalance(balanceEth.toFixed(4));
       } catch (error) {
-        console.error('Error fetching balance:', error);
-        setBalance('0');
+        console.error("Error fetching balance:", error);
+        setBalance("0");
       }
     };
 
@@ -93,10 +101,53 @@ const SendModal = ({ open, onClose, publicAddress }) => {
     }
   };
 
-  const handleConfirm = () => {
-    // Here you would implement the actual sending of the transaction
-    alert("Transaction confirmed! (Implementation needed)");
-    onClose();
+  const handleConfirm = async () => {
+    setIsLoading(true);
+    try {
+      // Retrieve the required transaction details
+      const gasPrice = await getGasPrice();
+      const estimatedGas = await estimateGas({
+        to: transactionDetails.recipientAddress,
+        from: publicAddress,
+        value:
+          "0x" + (parseFloat(transactionDetails.amount) * 1e18).toString(16),
+      });
+      const nonce = await getAccountNonce(publicAddress);
+
+      // Build the transaction manually using your createTransaction method
+      const transaction = createTransaction(
+        parseInt(nonce, 16),
+        gasPrice,
+        estimatedGas,
+        transactionDetails.recipientAddress,
+        "0x" + (parseFloat(transactionDetails.amount) * 1e18).toString(16) // Convert amount to hex
+      );
+
+      // Retrieve the private key from somewhere (you might store it encrypted and decrypt here)
+      const privateKey = "your-private-key-here"; // Placeholder
+
+      // Sign the transaction
+      const signedTransaction = signTransaction(transaction, privateKey);
+
+      // Serialize the signed transaction
+      const serializedTransaction = serializeTransaction(signedTransaction);
+
+      // Send the raw transaction
+      const txHash = await sendTransaction(
+        "0x" + serializedTransaction.toString("hex")
+      );
+
+      // Notify the user of the transaction hash
+      alert(`Transaction sent successfully! Tx Hash: ${txHash}`);
+
+      // Close the modal
+      onClose();
+    } catch (error) {
+      console.error("Error confirming transaction:", error);
+      alert("Error sending the transaction. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleBack = () => {

@@ -1,5 +1,5 @@
 import hdkey from "hdkey"; // HDKey for deriving keys
-import { bufferToHex, privateToPublic, publicToAddress } from "ethereumjs-util"; // Correct utility functions
+import { bufferToHex, privateToPublic, publicToAddress } from "ethereumjs-util"; 
 import { mnemonicToSeed } from "./mnemonic";
 
 // Function to derive a private key using BIP-32 path (m/44'/60'/0'/0/0)
