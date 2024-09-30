@@ -1,8 +1,9 @@
-const { keccak256 } = require("js-sha3");
-const EC = require("elliptic");
-const ec = new EC.ec("secp256k1");
+import { keccak256 } from "js-sha3";
+import { ec as EC } from "elliptic";
 
-function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
+const ec = new EC("secp256k1");
+
+export function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
   return {
     nonce,
     gasPrice,
@@ -13,7 +14,7 @@ function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
   };
 }
 
-function signTransaction(transaction, privateKey) {
+export function signTransaction(transaction, privateKey) {
   const txArray = [
     transaction.nonce,
     transaction.gasPrice,
@@ -28,7 +29,7 @@ function signTransaction(transaction, privateKey) {
   return { ...transaction, signature };
 }
 
-function serializeTransaction(signedTransaction) {
+export function serializeTransaction(signedTransaction) {
   return rlpEncode([
     signedTransaction.nonce,
     signedTransaction.gasPrice,
@@ -42,7 +43,7 @@ function serializeTransaction(signedTransaction) {
   ]);
 }
 
-function rlpEncode(input) {
+export function rlpEncode(input) {
   if (typeof input === "string" && input.startsWith("0x")) {
     return rlpEncode(Buffer.from(input.slice(2), "hex"));
   }
@@ -72,7 +73,7 @@ function rlpEncode(input) {
   throw new Error("Invalid input type for RLP encoding");
 }
 
-function encodeLength(len, offset) {
+export function encodeLength(len, offset) {
   if (len < 56) {
     return Buffer.from([len + offset]);
   }
@@ -84,7 +85,7 @@ function encodeLength(len, offset) {
   ]);
 }
 
-function ecdsaSign(msgHash, privateKey) {
+export function ecdsaSign(msgHash, privateKey) {
   const key = ec.keyFromPrivate(privateKey, "hex");
   const signature = key.sign(Buffer.from(msgHash, "hex"));
   return {
@@ -180,11 +181,3 @@ function runAllTests() {
 }
 
 runAllTests();
-
-module.exports = {
-  createTransaction,
-  signTransaction,
-  serializeTransaction,
-  rlpEncode,
-  ecdsaSign,
-};
