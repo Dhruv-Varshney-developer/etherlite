@@ -122,7 +122,7 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
 
       // Sign the transaction
       const signedTransaction = signTransaction(transaction, privateKey);
-
+      console.log("Signed Transaction:", signedTransaction);
       // Serialize the signed transaction
       const serializedTransaction = serializeTransaction(signedTransaction);
 
@@ -130,7 +130,7 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
         "Serialized Transaction:",
         serializedTransaction.toString("hex")
       );
-      console.log("Signed Transaction:", signedTransaction);
+
       // Send the raw transaction
       const txHash = await sendTransaction(
         "0x" + serializedTransaction.toString("hex")

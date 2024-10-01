@@ -1,7 +1,8 @@
 import { keccak256 } from "js-sha3";
 import { ec as EC } from "elliptic";
-
+import { rlp } from "ethereumjs-util";
 const ec = new EC("secp256k1");
+
 
 export function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
   return {
@@ -44,46 +45,10 @@ export function serializeTransaction(signedTransaction) {
 }
 
 export function rlpEncode(input) {
-  if (typeof input === "string" && input.startsWith("0x")) {
-    return rlpEncode(Buffer.from(input.slice(2), "hex"));
-  }
-  if (Buffer.isBuffer(input)) {
-    if (input.length === 1 && input[0] < 128) {
-      return input;
-    }
-    return Buffer.concat([encodeLength(input.length, 128), input]);
-  }
-  if (Array.isArray(input)) {
-    const output = Buffer.concat(input.map(rlpEncode));
-    return Buffer.concat([encodeLength(output.length, 192), output]);
-  }
-  if (typeof input === "number") {
-    if (input === 0) {
-      return Buffer.from([]);
-    }
-    const hex = input.toString(16);
-    return rlpEncode(Buffer.from(hex.length % 2 ? "0" + hex : hex, "hex"));
-  }
-  if (typeof input === "string") {
-    if (input.length === 0) {
-      return Buffer.from([]);
-    }
-    return rlpEncode(Buffer.from(input));
-  }
-  throw new Error("Invalid input type for RLP encoding");
+  return rlp.encode(input);
 }
 
-export function encodeLength(len, offset) {
-  if (len < 56) {
-    return Buffer.from([len + offset]);
-  }
-  const hexLength = len.toString(16);
-  const firstByte = offset + 55 + hexLength.length / 2;
-  return Buffer.concat([
-    Buffer.from([firstByte]),
-    Buffer.from(hexLength, "hex"),
-  ]);
-}
+
 
 export function ecdsaSign(msgHash, privateKey) {
   const key = ec.keyFromPrivate(privateKey, "hex");
