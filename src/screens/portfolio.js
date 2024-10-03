@@ -39,7 +39,7 @@ const Portfolio = () => {
 
   const decryptedSeedPhrase = decryptSeedPhrase(encryptedSeed, password);
   console.log("decrypted seed phrase:" + decryptedSeedPhrase);
-  useEffect(() => {
+  /* useEffect(() => {
     const verifyAndRedirect = async () => {
       const decryptedSeedPhrase = await decryptSeedPhrase(
         encryptedSeed,
@@ -54,7 +54,7 @@ const Portfolio = () => {
 
     verifyAndRedirect();
   }, [encryptedSeed, password, navigate]);
-
+*/
   useEffect(() => {
     const fetchAssets = async () => {
       const address = await derivePublicAddressFromSeed(decryptedSeedPhrase); // Implement derivePublicAddressFromSeed
