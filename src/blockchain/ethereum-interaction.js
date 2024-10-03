@@ -2,8 +2,13 @@ import fetch from "node-fetch";
 
 const alchemy_api_key = "_eey_DCxuKpdcJYnMuAWPiIrhbIsozOX";
 const NETWORK = "sepolia"; // or 'mainnet', 'sepolia', etc.
-const ALCHEMY_URL = `https://eth-${NETWORK}.g.alchemy.com/v2/${alchemy_api_key}`;
+let ALCHEMY_URL = `https://eth-${NETWORK}.g.alchemy.com/v2/${alchemy_api_key}`;
 
+
+// Function to update the ALCHEMY_URL based on dropdown selection
+export function setNetworkUrl(baseurl) {
+  ALCHEMY_URL = baseurl + alchemy_api_key;
+}
 async function sendJsonRpcRequest(method, params) {
   const response = await fetch(ALCHEMY_URL, {
     method: "POST",

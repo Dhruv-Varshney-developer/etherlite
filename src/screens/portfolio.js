@@ -18,9 +18,11 @@ import {
   readPrivateKeyFromSeed,
 } from "../blockchain/keypairgen";
 import { getBalance } from "../blockchain/ethereum-interaction";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ReceiveModal from "../components/receivemodal";
 import SendModal from "../components/sendmodal";
+import NetworkDropdown from "../components/networks";
+import { setNetworkUrl } from "../blockchain/ethereum-interaction";
 
 const Portfolio = () => {
   const [publicAddress, setPublicAddress] = useState("");
@@ -30,7 +32,6 @@ const Portfolio = () => {
   const [isCopied, setIsCopied] = useState(false);
   const [isReceiveModalOpen, setReceiveModalOpen] = useState(false);
   const [isSendModalOpen, setSendModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   const location = useLocation();
   const password = location.state?.password;
@@ -77,7 +78,6 @@ const Portfolio = () => {
       console.log("ethbalance:" + ethBalance);
       setBalance(parseInt(ethBalance, 16) / 1e18);
 
-      // Mock assets array for now, use Alchemy API to fetch real data later
       setAssets([
         {
           name: "Ethereum",
@@ -100,6 +100,10 @@ const Portfolio = () => {
     setTimeout(() => setIsCopied(false), 2000); // Reset after 2 seconds
   };
 
+  const handleNetworkChange = (baseurl) => {
+    setNetworkUrl(baseurl);
+  };
+
   return (
     <Container>
       {/* Total Portfolio Section */}
@@ -107,23 +111,45 @@ const Portfolio = () => {
         elevation={3}
         sx={{ p: 3, mb: 3, backgroundColor: "#1D1D1D", color: "#FFFFFF" }}
       >
-        <Typography variant="h5">Total portfolio value</Typography>
-        <Typography variant="h3">${(balance * 1600).toFixed(2)}</Typography>
-        {/* Public Address Display */}
-        <Typography variant="subtitle1" sx={{ mt: 2 }}>
-          Main Wallet: {publicAddress.slice(0, 6)}...{publicAddress.slice(-4)}
-          <IconButton
-            onClick={handleCopyAddress}
-            sx={{ ml: 1, color: "primary.main" }}
-          >
-            <ContentCopyIcon />
-          </IconButton>
-          {isCopied && (
-            <Typography variant="caption" color="primary">
-              Copied!
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between", // Space between portfolio value and dropdown
+            alignItems: "center", // Align items vertically centered
+          }}
+        >
+          {/* Left side: Portfolio value and public address */}
+          <Box>
+            <Typography variant="h5">Total portfolio value</Typography>
+            <Typography variant="h3">${(balance * 1600).toFixed(2)}</Typography>
+            {/* Public Address Display */}
+            <Typography variant="subtitle1" sx={{ mt: 2 }}>
+              Main Wallet: {publicAddress.slice(0, 6)}...
+              {publicAddress.slice(-4)}
+              <IconButton
+                onClick={handleCopyAddress}
+                sx={{ ml: 1, color: "primary.main" }}
+              >
+                <ContentCopyIcon />
+              </IconButton>
+              {isCopied && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <Typography variant="caption" color="primary">
+                    Copied!
+                  </Typography>
+                </motion.div>
+              )}
             </Typography>
-          )}
-        </Typography>
+          </Box>
+          {/* Right side: Dropdown to select network */}
+          <Box>
+            <NetworkDropdown onNetworkChange={handleNetworkChange} />
+          </Box>
+        </Box>
       </Paper>
 
       {/* Buttons (Receive, Send) */}
