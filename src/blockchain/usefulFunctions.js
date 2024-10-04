@@ -16,6 +16,17 @@ export function parseEther(etherString) {
     return weiValue;
 }
 
+export function hexToUint8Array(hexString) {
+    if (hexString.startsWith("0x")) {
+      hexString = hexString.slice(2); // Remove "0x" prefix
+    }
+  
+    const byteArray = new Uint8Array(hexString.length / 2);
+    for (let i = 0; i < byteArray.length; i++) {
+      byteArray[i] = parseInt(hexString.substr(i * 2, 2), 16);
+    }
+    return byteArray;
+  }
 // Example usage:
 const weiValue = parseEther("1.5"); // Converts 1.5 Ether to Wei
 console.log(weiValue.toString()); // Outputs: "1500000000000000000"
