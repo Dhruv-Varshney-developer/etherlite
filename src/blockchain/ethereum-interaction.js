@@ -71,3 +71,10 @@ export async function sendTransaction(serializedtransaction) {
   return sendJsonRpcRequest("eth_sendRawTransaction", [serializedtransaction]);
 }
 
+export const getBlockGasLimit = async () => {
+  const latestBlock = await sendJsonRpcRequest(
+   "eth_getBlockByNumber",
+  ["latest", false],
+  );
+  return parseInt(latestBlock.gasLimit, 16);
+};
