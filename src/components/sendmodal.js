@@ -26,6 +26,7 @@ import {
 } from "../blockchain/transaction";
 
 import { sendTransaction } from "../blockchain/ethereum-interaction";
+import { parseEther } from "../blockchain/usefulFunctions";
 
 const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
   const [recipientAddress, setRecipientAddress] = useState("");
@@ -109,22 +110,34 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
   const handleConfirm = async () => {
     setIsLoading(true);
     console.log("Transaction Details:", transactionDetails);
+
     try {
-      const latestBlockGasLimit = await getBlockGasLimit(); 
-      console.log("latestBlockGasLimit:"+latestBlockGasLimit) // Fetch latest block gas limit
+      const latestBlockGasLimit = await getBlockGasLimit();
+
+      console.log("latestBlockGasLimit:" + latestBlockGasLimit); // Fetch latest block gas limit
 
       const estimatedGas = parseInt(transactionDetails.estimatedGas, 16);
-      const gasLimit = Math.min(latestBlockGasLimit, estimatedGas * 1.2);  // Ensure gasLimit doesn't exceed block limit
+
+      const gasLimit = Math.min(
+        latestBlockGasLimit,
+        Math.ceil(estimatedGas * 1.2)
+      ); // Ensure gasLimit doesn't exceed block limit
+
       console.log("Gas Limit:", gasLimit);
+      const gasLimitHex = "0x" + gasLimit.toString(16);
+      console.log("Gas Limit Hex:", gasLimitHex);
+
+      const amountInWei = parseEther(transactionDetails.amount);
+      const amountInHex = "0x" + amountInWei.toString(16);
+
       // Build the transaction manually using your createTransaction method
       const transaction = createTransaction(
         transactionDetails.accountNonce + 1,
         transactionDetails.gasPrice,
-        gasLimit.toString(16), // Apply the estimated gas limit
-        
+        gasLimitHex,
 
         transactionDetails.recipientAddress,
-        transactionDetails.amount
+        amountInHex
       );
       console.log("Transaction:", transaction);
 
@@ -136,7 +149,7 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
 
       console.log(
         "Serialized Transaction:",
-"0x"+        serializedTransaction.toString("hex")
+        "0x" + serializedTransaction.toString("hex")
       );
 
       // Send the raw transaction
