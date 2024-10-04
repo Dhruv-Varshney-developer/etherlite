@@ -108,6 +108,7 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
 
   const handleConfirm = async () => {
     setIsLoading(true);
+    console.log("Transaction Details:", transactionDetails);
     try {
       // Build the transaction manually using your createTransaction method
       const transaction = createTransaction(
