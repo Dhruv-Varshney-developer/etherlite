@@ -112,8 +112,8 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
       // Build the transaction manually using your createTransaction method
       const transaction = createTransaction(
         transactionDetails.accountNonce,
-        transactionDetails.gasPriceGwei,
-        "1000000000000000000",
+        transactionDetails.gasPrice,
+        "100000000000",
 
         transactionDetails.recipientAddress,
         transactionDetails.amount
@@ -128,7 +128,7 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
 
       console.log(
         "Serialized Transaction:",
-        serializedTransaction.toString("hex")
+"0x"+        serializedTransaction.toString("hex")
       );
 
       // Send the raw transaction

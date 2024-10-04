@@ -67,7 +67,7 @@ export async function validateAddressOnSepolia(address) {
   }
 }
 
-export async function sendTransaction(transaction) {
-  return sendJsonRpcRequest("eth_sendRawTransaction", [transaction]);
+export async function sendTransaction(serializedtransaction) {
+  return sendJsonRpcRequest("eth_sendRawTransaction", [serializedtransaction]);
 }
 

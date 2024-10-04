@@ -18,7 +18,7 @@ import {
   readPrivateKeyFromSeed,
 } from "../blockchain/keypairgen";
 import { getBalance } from "../blockchain/ethereum-interaction";
-import { useLocation } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
 import ReceiveModal from "../components/receivemodal";
 import SendModal from "../components/sendmodal";
 import NetworkDropdown from "../components/networks";
@@ -34,19 +34,17 @@ const Portfolio = () => {
   const [isSendModalOpen, setSendModalOpen] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const password = location.state?.password;
 
   const encryptedSeed = getEncryptedSeedFromLocalStorage();
 
   const decryptedSeedPhrase = decryptSeedPhrase(encryptedSeed, password);
   console.log("decrypted seed phrase:" + decryptedSeedPhrase);
-  /* useEffect(() => {
+   useEffect(() => {
     const verifyAndRedirect = async () => {
-      const decryptedSeedPhrase = await decryptSeedPhrase(
-        encryptedSeed,
-        password
-      );
-      if (!decryptedSeedPhrase) {
+      
+      if (!encryptedSeed) {
         navigate("/");
       } else if (!password) {
         navigate("/enter-password");
@@ -55,7 +53,7 @@ const Portfolio = () => {
 
     verifyAndRedirect();
   }, [encryptedSeed, password, navigate]);
-*/
+
   useEffect(() => {
     const fetchAssets = async () => {
       const address = await derivePublicAddressFromSeed(decryptedSeedPhrase); // Implement derivePublicAddressFromSeed
