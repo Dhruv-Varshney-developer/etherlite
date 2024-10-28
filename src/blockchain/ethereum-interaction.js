@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 
 const alchemy_api_key = "_eey_DCxuKpdcJYnMuAWPiIrhbIsozOX";
-const NETWORK = "sepolia"; // or 'mainnet', 'sepolia', etc.
+const NETWORK = "sepolia"; 
 let ALCHEMY_URL = `https://eth-${NETWORK}.g.alchemy.com/v2/${alchemy_api_key}`;
 
 
