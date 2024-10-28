@@ -26,8 +26,7 @@ import {
 } from "../blockchain/transaction";
 
 import { sendTransaction } from "../blockchain/ethereum-interaction";
-import { parseEther } from "../blockchain/usefulFunctions";
-
+import { ethers } from "ethers";
 const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -74,10 +73,13 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
     try {
       const gasPrice = await getGasPrice();
       const gasPriceGwei = parseInt(gasPrice, 16) / 1e9;
+      const amountInWei = ethers.parseEther(amount);
+      const amountInHex = "0x" + amountInWei.toString(16);
+
       const estimatedGas = await estimateGas({
         to: recipientAddress,
         from: publicAddress,
-        value: "0x" + (parseFloat(amount) * 1e18).toString(16),
+        value: amountInHex,
       });
       const gasFeeEth = (parseInt(estimatedGas, 16) * gasPriceGwei) / 1e9;
       const nonce = await getAccountNonce(publicAddress);
@@ -90,6 +92,8 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
         gasPriceGwei,
         gasPrice,
         gasFeeEth,
+        amountInWei,
+        amountInHex,
         accountNonce: parseInt(nonce, 16),
         newBalance: (
           parseFloat(balance) -
@@ -127,9 +131,6 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
       const gasLimitHex = "0x" + gasLimit.toString(16);
       console.log("Gas Limit Hex:", gasLimitHex);
 
-      const amountInWei = parseEther(transactionDetails.amount);
-      const amountInHex = "0x" + amountInWei.toString(16);
-
       // Build the transaction manually using your createTransaction method
       const transaction = createTransaction(
         transactionDetails.accountNonce + 1,
@@ -137,9 +138,10 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
         gasLimitHex,
 
         transactionDetails.recipientAddress,
-        amountInHex
+        transactionDetails.amountInHex
       );
       console.log("Transaction:", transaction);
+      console.log("privateKey:", privateKey);
 
       // Sign the transaction
       const signedTransaction = signTransaction(transaction, privateKey);
