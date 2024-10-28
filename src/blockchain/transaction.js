@@ -15,40 +15,49 @@ export function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
 }
 
 export function signedTransaction(transaction, privateKey) {
-  const privateKeyBuffer = toBuffer(privateKey);
+  try {
+    const privateKeyBuffer = toBuffer(privateKey);
 
-  // Prepare the array for RLP encoding (omit chainId)
-  const txArray = [
-    transaction.nonce,
-    transaction.gasPrice,
-    transaction.gasLimit,
-    transaction.to,
-    transaction.value,
-    transaction.data,
-    // "0x" + transaction.chainId.toString(16), // Omit this for legacy transactions
-  ];
+    // Create RLP encoding of the transaction without signature
+    const txData = [
+      toBuffer(transaction.nonce),
+      toBuffer(transaction.gasPrice),
+      toBuffer(transaction.gasLimit),
+      toBuffer(transaction.to),
+      toBuffer(transaction.value),
+      toBuffer(transaction.data),
+      toBuffer(transaction.chainId),
+      toBuffer("0x"), // r
+      toBuffer("0x"), // s
+    ];
 
-  const rlpEncoded = rlp.encode(txArray);
-  const msgHash = keccak256(rlpEncoded);
+    const rlpEncoded = rlp.encode(txData);
+    const msgHash = keccak256(rlpEncoded);
 
-  // Sign the transaction
-  const { v, r, s } = ecsign(msgHash, privateKeyBuffer);
+    // Sign the transaction
+    const sig = ecsign(msgHash, privateKeyBuffer);
 
-  // Re-encode the transaction with the signature (omit chainId)
-  const signedTxArray = [
-    transaction.nonce,
-    transaction.gasPrice,
-    transaction.gasLimit,
-    transaction.to,
-    transaction.value,
-    transaction.data,
-    bufferToHex(r),
-    bufferToHex(s),
-    // Calculate the v value correctly
-    bufferToHex((v % 2) + 27), // Ensure v is in the right format
-  ];
+    // Calculate v value
+    const v = sig.v + (transaction.chainId * 2 + 35);
 
-  return "0x" + rlp.encode(signedTxArray).toString("hex");
+    // Serialize the signed transaction
+    const serializedTransaction = rlp.encode([
+      toBuffer(transaction.nonce),
+      toBuffer(transaction.gasPrice),
+      toBuffer(transaction.gasLimit),
+      toBuffer(transaction.to),
+      toBuffer(transaction.value),
+      toBuffer(transaction.data),
+      toBuffer(v),
+      toBuffer(sig.r),
+      toBuffer(sig.s),
+    ]);
+
+    return bufferToHex(serializedTransaction);
+  } catch (error) {
+    console.error("Error signing and serializing transaction:", error);
+    throw error;
+  }
 }
 
 // This function will sign the transaction using ethers.js instead of manual signing
