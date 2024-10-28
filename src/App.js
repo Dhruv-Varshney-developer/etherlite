@@ -1,16 +1,12 @@
 import React from "react";
-import {
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 import Header from "./components/header";
 import Portfolio from "./screens/portfolio";
-import NFT from "./screens/nft";
+/*import NFT from "./screens/nft";
 import Trade from "./screens/trade";
 import Transactions from "./screens/transactions";
-import Settings from "./screens/settings";
+import Settings from "./screens/settings"; */
 import WalletScreen from "./screens/wallet";
 import RecoveryPhraseScreen from "./screens/walletrecovery";
 import NewWallet from "./screens/newwallet";
@@ -34,10 +30,10 @@ function App() {
   // Define the paths where you want to display the header
   const headerPaths = [
     "/portfolio",
-    "/nft",
+    /*   "/nft",
     "/trade",
     "/transactions",
-    "/settings",
+    "/settings", */
   ];
 
   // Check if the current path is in the headerPaths array
@@ -67,10 +63,10 @@ function App() {
               <Route path="/newwallet" element={<WalletScreen />} />
               <Route path="/recovery" element={<RecoveryPhraseScreen />} />
               <Route path="/portfolio" element={<Portfolio />} />
-              <Route path="/nft" element={<NFT />} />
+              {/*<Route path="/nft" element={<NFT />} />
               <Route path="/trade" element={<Trade />} />
               <Route path="/transactions" element={<Transactions />} />
-              <Route path="/settings" element={<Settings />} />
+              <Route path="/settings" element={<Settings />} /> */}
             </Routes>
           </Box>
         </Box>

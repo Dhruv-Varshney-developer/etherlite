@@ -11,7 +11,7 @@ function Header() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          height: 120
+          height: 120,
         }}
       >
         <img
@@ -23,7 +23,7 @@ function Header() {
           <Button color="inherit" component={Link} to="/portfolio">
             Portfolio
           </Button>
-          <Button color="inherit" component={Link} to="/nft">
+          {/* <Button color="inherit" component={Link} to="/nft">
             NFT
           </Button>
           <Button color="inherit" component={Link} to="/trade">
@@ -31,7 +31,7 @@ function Header() {
           </Button>
           <Button color="inherit" component={Link} to="/transactions">
             Transactions
-          </Button>
+          </Button> */}
         </div>
       </Toolbar>
     </AppBar>
