@@ -21,6 +21,7 @@
     "ethjs-util": "^0.1.6",
     "framer-motion": "^11.8.0",
     "hdkey": "^2.1.0",
+    "hex-array": "^1.0.0",
     "js-sha3": "^0.9.3",
     "node-fetch": "2.6.1",
     "react": "^18.3.1",

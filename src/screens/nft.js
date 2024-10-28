@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 
 function NFT() {
-  const [nfts, setNfts] = useState([
+  const [nfts] = useState([
     {
       id: 1,
       name: "Cool Cat #1234",

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 function Transactions() {
-  const [transactions, setTransactions] = useState([
+  const [transactions] = useState([
     {
       id: 1,
       date: "2023-09-26",
