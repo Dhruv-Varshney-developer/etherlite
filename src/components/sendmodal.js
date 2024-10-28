@@ -21,12 +21,12 @@ import {
 
 import {
   createTransaction,
-  signTransaction,
-  serializeTransaction,
+  signedTransaction,
+  checksigningviaethers,
 } from "../blockchain/transaction";
 
 import { sendTransaction } from "../blockchain/ethereum-interaction";
-import { ethers } from "ethers";
+import { ethers, Transaction } from "ethers";
 const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
   const [recipientAddress, setRecipientAddress] = useState("");
   const [amount, setAmount] = useState("");
@@ -125,15 +125,15 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
       const gasLimit = Math.min(
         latestBlockGasLimit,
         Math.ceil(estimatedGas * 1.2)
-      ); // Ensure gasLimit doesn't exceed block limit
+      );
 
       console.log("Gas Limit:", gasLimit);
       const gasLimitHex = "0x" + gasLimit.toString(16);
       console.log("Gas Limit Hex:", gasLimitHex);
 
-      // Build the transaction manually using your createTransaction method
+      // Build the transaction manually using  createTransaction method
       const transaction = createTransaction(
-        transactionDetails.accountNonce + 1,
+        "0x" + transactionDetails.accountNonce.toString(16),
         transactionDetails.gasPrice,
         gasLimitHex,
 
@@ -144,23 +144,22 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
       console.log("privateKey:", privateKey);
 
       // Sign the transaction
-      const signedTransaction = signTransaction(transaction, privateKey);
-      console.log("Signed Transaction:", signedTransaction);
-      // Serialize the signed transaction
-      const serializedTransaction = serializeTransaction(signedTransaction);
+      const signedTx = signedTransaction(transaction, privateKey);
+      console.log("Signed Transaction:", signedTx);
 
-      console.log(
-        "Serialized Transaction:",
-        "0x" + serializedTransaction.toString("hex")
-      );
+      // console.log(Transaction.from(signedTx));
 
+      /*
+      // Sign the transaction using ethers.js instead of the manual signing
+      const signedTx = await checksigningviaethers(transaction, privateKey);
+      console.log("Signed Transaction (ethers.js):", signedTx);
+*/
       // Send the raw transaction
-      const txHash = await sendTransaction(
-        "0x" + serializedTransaction.toString("hex")
-      );
+      const txHash = await sendTransaction(signedTx);
 
       // Notify the user of the transaction hash
       alert(`Transaction sent successfully! Tx Hash: ${txHash}`);
+      console.log(`Transaction sent successfully! Tx Hash: ${txHash}`);
 
       // Close the modal
       onClose();
