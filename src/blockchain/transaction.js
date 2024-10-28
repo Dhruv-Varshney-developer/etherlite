@@ -1,5 +1,5 @@
-import { rlp, ecsign, keccak256, toBuffer,bufferToHex } from "ethereumjs-util";
-import { hexToUint8Array } from "./usefulFunctions";
+import { rlp, ecsign, keccak256, toBuffer, bufferToHex } from "ethereumjs-util";
+//import { hexToUint8Array } from "./usefulFunctions";
 import { Wallet } from "ethers";
 
 export function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
@@ -16,7 +16,7 @@ export function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
 
 export function signedTransaction(transaction, privateKey) {
   const privateKeyBuffer = toBuffer(privateKey);
-  
+
   // Prepare the array for RLP encoding (omit chainId)
   const txArray = [
     transaction.nonce,
@@ -27,10 +27,10 @@ export function signedTransaction(transaction, privateKey) {
     transaction.data,
     // "0x" + transaction.chainId.toString(16), // Omit this for legacy transactions
   ];
-  
+
   const rlpEncoded = rlp.encode(txArray);
   const msgHash = keccak256(rlpEncoded);
-  
+
   // Sign the transaction
   const { v, r, s } = ecsign(msgHash, privateKeyBuffer);
 
@@ -45,16 +45,14 @@ export function signedTransaction(transaction, privateKey) {
     bufferToHex(r),
     bufferToHex(s),
     // Calculate the v value correctly
-    bufferToHex((v % 2) + 27) // Ensure v is in the right format
+    bufferToHex((v % 2) + 27), // Ensure v is in the right format
   ];
 
   return "0x" + rlp.encode(signedTxArray).toString("hex");
 }
 
-
-
 // This function will sign the transaction using ethers.js instead of manual signing
-export async function checksigningviaethers(transaction, privateKey) {
+export async function signingviaethers(transaction, privateKey) {
   try {
     // Initialize the wallet instance using the provided private key
     const wallet = new Wallet(privateKey);

@@ -22,7 +22,7 @@ import {
 import {
   createTransaction,
   signedTransaction,
-  checksigningviaethers,
+  signingviaethers,
 } from "../blockchain/transaction";
 
 import { sendTransaction } from "../blockchain/ethereum-interaction";
@@ -142,18 +142,18 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
       );
       console.log("Transaction:", transaction);
       console.log("privateKey:", privateKey);
-
+      /*
       // Sign the transaction
       const signedTx = signedTransaction(transaction, privateKey);
       console.log("Signed Transaction:", signedTx);
 
-      // console.log(Transaction.from(signedTx));
+      console.log(Transaction.from(signedTx));
+      */
 
-      /*
       // Sign the transaction using ethers.js instead of the manual signing
-      const signedTx = await checksigningviaethers(transaction, privateKey);
+      const signedTx = await signingviaethers(transaction, privateKey);
       console.log("Signed Transaction (ethers.js):", signedTx);
-*/
+
       // Send the raw transaction
       const txHash = await sendTransaction(signedTx);
 
