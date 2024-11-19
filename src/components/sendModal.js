@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
-import { Box, IconButton, Modal } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { SendForm } from './sendForm';
-import { ConfirmationDialog } from './confirmationDialog.js';
-import { useWalletBalance } from '../hooks/useWalletBalance';
-import { useTransactionPreparation } from '../hooks/useTransactionPreparation';
-import { useTransactionConfirmation } from '../hooks/useTransactionConfirmation';
+import React, { useState } from "react";
+import { Box, IconButton, Modal } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { SendForm } from "./sendForm.js";
+import { ConfirmationDialog } from "./confirmationDialog.js";
+import { useWalletBalance } from "../hooks/useWalletBalance.js";
+import { useTransactionPreparation } from "../hooks/useTransactionPreparation.js";
+import { useTransactionConfirmation } from "../hooks/useTransactionConfirmation.js";
 
 const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const balance = useWalletBalance(publicAddress, open);
-  const { isLoading: isPreparing, transactionDetails, prepareTransaction } = useTransactionPreparation(publicAddress);
-  const { isLoading: isConfirming, confirmAndSendTransaction } = useTransactionConfirmation();
+  const {
+    isLoading: isPreparing,
+    transactionDetails,
+    prepareTransaction,
+  } = useTransactionPreparation(publicAddress);
+  const { confirmAndSendTransaction } = useTransactionConfirmation();
 
   const handleSend = async (recipientAddress, amount) => {
     try {
@@ -25,7 +29,10 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
 
   const handleConfirm = async () => {
     try {
-      const txHash = await confirmAndSendTransaction(transactionDetails, privateKey);
+      const txHash = await confirmAndSendTransaction(
+        transactionDetails,
+        privateKey
+      );
       alert(`Transaction sent successfully! Tx Hash: ${txHash}`);
       onClose();
     } catch (error) {
@@ -36,8 +43,12 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
 
   const handleBack = () => setShowConfirmation(false);
 
-  const newBalance = transactionDetails 
-    ? (parseFloat(balance) - parseFloat(transactionDetails.amount) - transactionDetails.gasFeeEth).toFixed(4)
+  const newBalance = transactionDetails
+    ? (
+        parseFloat(balance) -
+        parseFloat(transactionDetails.amount) -
+        transactionDetails.gasFeeEth
+      ).toFixed(4)
     : balance;
 
   return (
@@ -62,9 +73,9 @@ const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
         >
           <CloseIcon />
         </IconButton>
-        
+
         {!showConfirmation ? (
-          <SendForm 
+          <SendForm
             balance={balance}
             onSend={handleSend}
             isLoading={isPreparing}
