@@ -1,6 +1,7 @@
 import { rlp, ecsign, keccak256, toBuffer, bufferToHex } from "ethereumjs-util";
 //import { hexToUint8Array } from "./usefulFunctions";
 import { Wallet } from "ethers";
+import { getCurrentChainId } from "./ethereum-interaction";
 
 export function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
   return {
@@ -10,7 +11,7 @@ export function createTransaction(nonce, gasPrice, gasLimit, toAddress, value) {
     to: toAddress,
     value,
     data: "0x",
-    chainId: 11155111,
+    chainId: getCurrentChainId(),
   };
 }
 
