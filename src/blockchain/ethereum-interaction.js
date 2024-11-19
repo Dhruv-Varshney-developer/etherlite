@@ -1,13 +1,20 @@
 import fetch from "node-fetch";
+import { networks } from "../utils/networkConfig";
 
 const alchemy_api_key = "_eey_DCxuKpdcJYnMuAWPiIrhbIsozOX";
-const NETWORK = "sepolia"; 
-let ALCHEMY_URL = `https://eth-${NETWORK}.g.alchemy.com/v2/${alchemy_api_key}`;
+let currentNetwork = networks[0];
+let ALCHEMY_URL = currentNetwork.baseUrl + alchemy_api_key;
 
+export function getCurrentChainId() {
+  return currentNetwork.chainId;
+}
 
-// Function to update the ALCHEMY_URL based on dropdown selection
-export function setNetworkUrl(baseurl) {
-  ALCHEMY_URL = baseurl + alchemy_api_key;
+export function setNetworkUrl(baseUrl) {
+  const network = networks.find((n) => n.baseUrl === baseUrl);
+  if (network) {
+    currentNetwork = network;
+    ALCHEMY_URL = baseUrl + alchemy_api_key;
+  }
 }
 async function sendJsonRpcRequest(method, params) {
   const response = await fetch(ALCHEMY_URL, {
@@ -52,7 +59,10 @@ export async function getBalance(address) {
 export async function validateAddressOnSepolia(address) {
   try {
     // Try to fetch the transaction count for the address
-    const transactionCount = await sendJsonRpcRequest("eth_getTransactionCount", [address, "latest"]);
+    const transactionCount = await sendJsonRpcRequest(
+      "eth_getTransactionCount",
+      [address, "latest"]
+    );
 
     // If a transaction count is returned, the address exists and is valid
     if (transactionCount) {
@@ -72,9 +82,9 @@ export async function sendTransaction(serializedtransaction) {
 }
 
 export const getBlockGasLimit = async () => {
-  const latestBlock = await sendJsonRpcRequest(
-   "eth_getBlockByNumber",
-  ["latest", false],
-  );
+  const latestBlock = await sendJsonRpcRequest("eth_getBlockByNumber", [
+    "latest",
+    false,
+  ]);
   return parseInt(latestBlock.gasLimit, 16);
 };
