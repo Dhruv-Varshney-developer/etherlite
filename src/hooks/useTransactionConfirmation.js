@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { getBlockGasLimit } from "../blockchain/ethereum-interaction";
-import {
-  createTransaction,
-  signingviaethers,
-  sendTransaction,
-} from "../blockchain/transaction";
+import { createTransaction, signingviaethers } from "../blockchain/transaction";
+import { sendTransaction } from "../blockchain/ethereum-interaction";
 
 export const useTransactionConfirmation = () => {
   const [isLoading, setIsLoading] = useState(false);

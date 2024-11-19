@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, IconButton, Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { SendForm } from './sendForm';
-import { ConfirmationDialog } from './confirmationdialog';
+import { ConfirmationDialog } from './confirmationDialog.js';
 import { useWalletBalance } from '../hooks/useWalletBalance';
 import { useTransactionPreparation } from '../hooks/useTransactionPreparation';
 import { useTransactionConfirmation } from '../hooks/useTransactionConfirmation';

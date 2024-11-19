@@ -19,8 +19,8 @@ import {
 } from "../blockchain/keypairgen";
 import { getBalance } from "../blockchain/ethereum-interaction";
 import { useLocation,useNavigate } from "react-router-dom";
-import ReceiveModal from "../components/receivemodal";
-import SendModal from "../components/sendmodal";
+import ReceiveModal from "../components/receiveModal";
+import SendModal from "../components/sendModal";
 import NetworkDropdown from "../components/networks";
 import { setNetworkUrl } from "../blockchain/ethereum-interaction";
 
