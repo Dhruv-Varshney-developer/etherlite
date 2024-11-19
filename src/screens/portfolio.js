@@ -18,10 +18,11 @@ const Portfolio = () => {
   const password = location.state?.password;
 
   const { publicAddress, privateKey } = useWalletSetup(password);
-  const { balance, assets } = useAssets(publicAddress);
+  const { balance, assets, refreshAssets } = useAssets(publicAddress);
 
   const handleNetworkChange = (baseurl) => {
     setNetworkUrl(baseurl);
+    refreshAssets();
   };
 
   return (

@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getBalance } from "../blockchain/ethereum-interaction";
 
 export const useAssets = (publicAddress) => {
   const [balance, setBalance] = useState(0);
   const [assets, setAssets] = useState([]);
 
-  useEffect(() => {
-    const fetchAssets = async () => {
-      if (!publicAddress) return;
+  const fetchAssets = useCallback(async () => {
+    if (!publicAddress) return;
 
+    try {
       const ethBalance = await getBalance(publicAddress);
       const balanceInEth = parseInt(ethBalance, 16) / 1e18;
       setBalance(balanceInEth);
@@ -22,10 +22,16 @@ export const useAssets = (publicAddress) => {
           amount: balanceInEth,
         },
       ]);
-    };
-
-    fetchAssets();
+    } catch (error) {
+      console.error("Error fetching assets:", error);
+      setBalance(0);
+      setAssets([]);
+    }
   }, [publicAddress]);
 
-  return { balance, assets };
+  useEffect(() => {
+    fetchAssets();
+  }, [publicAddress, fetchAssets]);
+
+  return { balance, assets, refreshAssets: fetchAssets };
 };
