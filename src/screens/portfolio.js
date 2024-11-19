@@ -25,6 +25,16 @@ const Portfolio = () => {
     refreshAssets();
   };
 
+  const handleReceiveModalClose = () => {
+    setReceiveModalOpen(false);
+    refreshAssets(); // Refresh assets when receive modal is closed
+  };
+
+  const handleSendModalClose = () => {
+    setSendModalOpen(false);
+    refreshAssets(); // Refresh assets when send modal is closed
+  };
+
   return (
     <Container>
       <PortfolioHeader
@@ -42,12 +52,12 @@ const Portfolio = () => {
 
       <ReceiveModal
         open={isReceiveModalOpen}
-        onClose={() => setReceiveModalOpen(false)}
+        onClose={handleReceiveModalClose}
         publicAddress={publicAddress}
       />
       <SendModal
         open={isSendModalOpen}
-        onClose={() => setSendModalOpen(false)}
+        onClose={handleSendModalClose}
         publicAddress={publicAddress}
         privateKey={privateKey}
       />
