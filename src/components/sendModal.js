@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Box, IconButton, Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { SendForm } from './sendForm';
+import { SendForm } from './sendForm.js';
 import { ConfirmationDialog } from './confirmationDialog.js';
-import { useWalletBalance } from '../hooks/useWalletBalance';
-import { useTransactionPreparation } from '../hooks/useTransactionPreparation';
-import { useTransactionConfirmation } from '../hooks/useTransactionConfirmation';
+import { useWalletBalance } from '../hooks/useWalletBalance.js';
+import { useTransactionPreparation } from '../hooks/useTransactionPreparation.js';
+import { useTransactionConfirmation } from '../hooks/useTransactionConfirmation.js';
 
 const SendModal = ({ open, onClose, publicAddress, privateKey }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
