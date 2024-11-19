@@ -3,23 +3,31 @@ import { Container, Typography, TextField, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { decryptSeedPhrase } from "../security/encryption";
-import { getEncryptedSeedFromLocalStorage } from "../security/storage";
+import {
+  saveTempPassword,
+  getEncryptedSeedFromLocalStorage,
+} from "../security/storage";
 
-const EnterPassword = ({ onPasswordSubmit }) => {
+const EnterPassword = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   const handleUnlock = async () => {
     const encryptedSeed = getEncryptedSeedFromLocalStorage();
+    console.log("Attempting unlock with seed:", !!encryptedSeed); // Log if seed exists
+
     if (encryptedSeed) {
       try {
-        // Attempt to decrypt seed phrase with entered password
-        await decryptSeedPhrase(encryptedSeed, password);
-        onPasswordSubmit(password); // Update password state and allow user to proceed
-        navigate("/portfolio"); // Redirect to portfolio
+        console.log("Attempting decryption...");
+        const result = await decryptSeedPhrase(encryptedSeed, password);
+        console.log("Decryption successful:", !!result);
+        saveTempPassword(password);
+
+        navigate("/portfolio");
       } catch (error) {
-        setError(true); // Show error if decryption fails
+        console.error("Decryption error:", error);
+        setError(true);
       }
     }
   };

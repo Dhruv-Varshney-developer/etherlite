@@ -1,4 +1,4 @@
-import CryptoJS from 'crypto-js';
+import CryptoJS from "crypto-js";
 
 /**
  * Encrypts a seed phrase with a given password.
@@ -24,6 +24,6 @@ export const decryptSeedPhrase = (encryptedSeed, password) => {
     return seedPhrase;
   } catch (error) {
     console.error("Decryption error:", error.message);
-    return null;
+    throw error;
   }
 };

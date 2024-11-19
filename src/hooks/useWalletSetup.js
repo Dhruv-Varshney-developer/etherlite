@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getEncryptedSeedFromLocalStorage } from "../security/storage";
+import {
+  getEncryptedSeedFromLocalStorage,
+  getTempPassword,
+} from "../security/storage";
 import { decryptSeedPhrase } from "../security/encryption";
 import {
   derivePublicAddressFromSeed,
   readPrivateKeyFromSeed,
 } from "../blockchain/keypairgen";
 
-export const useWalletSetup = (password) => {
+export const useWalletSetup = () => {
   const [publicAddress, setPublicAddress] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const navigate = useNavigate();
 
   const encryptedSeed = getEncryptedSeedFromLocalStorage();
+  const password = getTempPassword();
+
   const decryptedSeedPhrase = password
     ? decryptSeedPhrase(encryptedSeed, password)
     : null;
@@ -31,22 +36,33 @@ export const useWalletSetup = (password) => {
 
   useEffect(() => {
     const setupWallet = async () => {
-      if (!decryptedSeedPhrase) return;
-
-      const address = await derivePublicAddressFromSeed(decryptedSeedPhrase);
-      const derivedPrivateKey = readPrivateKeyFromSeed(decryptedSeedPhrase);
-
-      if (
-        !address ||
-        typeof address !== "string" ||
-        !address.startsWith("0x")
-      ) {
-        console.error("Invalid derived address:", address);
+      if (!decryptedSeedPhrase) {
+        console.log("No decrypted seed phrase available");
         return;
       }
 
-      setPublicAddress(address);
-      setPrivateKey(derivedPrivateKey);
+      console.log("Setting up wallet with decrypted seed");
+      try {
+        const address = await derivePublicAddressFromSeed(decryptedSeedPhrase);
+        console.log("Derived address success:", !!address);
+
+        const derivedPrivateKey = readPrivateKeyFromSeed(decryptedSeedPhrase);
+        console.log("Derived private key success:", !!derivedPrivateKey);
+
+        if (
+          !address ||
+          typeof address !== "string" ||
+          !address.startsWith("0x")
+        ) {
+          console.error("Invalid derived address:", address);
+          return;
+        }
+
+        setPublicAddress(address);
+        setPrivateKey(derivedPrivateKey);
+      } catch (err) {
+        console.error("Wallet setup error:", err);
+      }
     };
 
     setupWallet();
