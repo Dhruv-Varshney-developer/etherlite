@@ -7,7 +7,7 @@ EtherLite is a cryptocurrency wallet developed from scratch, **without the use o
 
 ### Wallet Management
 - Ability to **create and import existing wallets** using private keys or mnemonic phrases.
-- Secure storage of passwords using the browser's built-in **encryption capabilities**.
+- Secure storage of passwords using the local storage and secure **encryption mechanisms**.
 
 ### Blockchain Interaction
 - Implemented **node and data retrieval functions** for Ethereum interaction.
@@ -52,4 +52,5 @@ EtherLite is a cryptocurrency wallet developed from scratch, **without the use o
 
 ### Blockchain Node
 - Powered by **Alchemy**.
+
 
