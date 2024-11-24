@@ -36,7 +36,7 @@ EtherLite is a cryptocurrency wallet developed from scratch, **without the use o
 
 ### Blockchain
 - **BIP-39** for mnemonic generation.
-- Crypto libraries like **Ethereumjs-util**.
+- Low-level crypto libraries like **Ethereumjs-util**.
 
 ### Cryptography
 - Custom implementations for:
